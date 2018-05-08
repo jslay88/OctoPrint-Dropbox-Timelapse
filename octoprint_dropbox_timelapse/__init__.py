@@ -9,7 +9,8 @@ from dropbox.exceptions import ApiError, AuthError
 
 class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
                              octoprint.plugin.EventHandlerPlugin,
-                             octoprint.plugin.TemplatePlugin):
+                             octoprint.plugin.TemplatePlugin,
+                             octoprint.plugin.WizardPlugin):
 
     def get_settings_defaults(self):
         return dict(
@@ -24,7 +25,8 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
 
     def get_template_configs(self):
         return [
-            dict(type='settings', custom_bindings=False, template='dropbox_timelapse_settings.jinja2')
+            dict(type='settings', custom_bindings=False, template='dropbox_timelapse_settings.jinja2'),
+            dict(type='wizard', custom_bindings=False, template='dropbox_timelapse_wizard.jinja2')
         ]
 
     def get_update_information(self):
