@@ -23,6 +23,13 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
             admin=[['api_token'], ]
         )
 
+    def is_wizard_required(self):
+        self._logger.info(True if not self.api_token else False)
+        return True if not self.api_token else False
+
+    def is_wizard_ignored(self, seen_wizards, implementation):
+        return not self.is_wizard_required()
+
     def get_template_configs(self):
         return [
             dict(type='settings', custom_bindings=False, template='dropbox_timelapse_settings.jinja2'),
