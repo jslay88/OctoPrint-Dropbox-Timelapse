@@ -17,6 +17,11 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
             delete_afer_upload=False
         )
 
+    def get_settings_restricted_paths(self):
+        return dict(
+            admin=[['api_token'], ]
+        )
+
     def get_template_configs(self):
         return [
             dict(type='settings', custom_bindings=False, template='dropbox_timelapse_settings.jinja2')
