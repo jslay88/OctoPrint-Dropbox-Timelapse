@@ -14,7 +14,7 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
     def get_settings_defaults(self):
         return dict(
             api_token=None,
-            delete_afer_upload=False
+            delete_after_upload=False
         )
 
     def get_settings_restricted_paths(self):
