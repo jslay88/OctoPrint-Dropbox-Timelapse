@@ -53,7 +53,8 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
         return self._settings.get_boolean(['delete_after_upload'])
 
     def on_event(self, event, payload):
-        if event == 'MovieDone':
+        from octoprint.events import Events
+        if event == Events.MOVIE_DONE:
             self.upload_timelapse(payload)
 
     def upload_timelapse(self, payload):
