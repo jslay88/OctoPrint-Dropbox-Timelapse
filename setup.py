@@ -21,7 +21,7 @@ plugin_version = "0.1.2"
 plugin_description = """Automatically upload rendered timelapses to Dropbox. Can also delete after upload to save space on the Raspberry Pi SD Card."""
 
 # The plugin's author. Can be overwritten within OctoPrint's internal data via __plugin_author__ in the plugin module
-plugin_author = "Justin Slay"
+plugin_author = "Justin Slay, Sam Kemp"
 
 # The plugin's author's mail address.
 plugin_author_email = "justin.slay@gmail.com"
