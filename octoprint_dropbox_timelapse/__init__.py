@@ -55,12 +55,12 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
 
     def on_event(self, event, payload):
         from octoprint.events import Events
-        acceptable_timelapse_events = (
-            Events.MOVIE_DONE,
-            Events.PLUGIN_OCTOLAPSE_MOVIE_DONE
-        )
-        if any(event == acceptable_event for acceptable_event in acceptable_timelapse_events):
-            self.upload_timelapse(payload)
+        try:
+            if event = Events.PLUGIN_OCTOLAPSE_MOVIE_DONE:
+                self.upload_timelapse(payload)
+        except:
+            if event = Events.MOVIE_DONE:
+                self.upload_timelapse(payload)
 
     def upload_timelapse(self, payload):
         path = payload['movie']
