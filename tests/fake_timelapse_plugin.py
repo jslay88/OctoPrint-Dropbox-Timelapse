@@ -12,7 +12,7 @@ class FakeTimelapse(octoprint.plugin.EventHandlerPlugin):
         if event == Events.PRINT_DONE:
             self._logger.info('PRINT FINISHED. SUBMITTING FAKE TIMELAPSE')
             eventManager().fire(Events.MOVIE_DONE, {
-                'gcode': 'fake.gcode',
+                'gcode': payload['name'],
                 'movie': os.path.join(
                     os.path.dirname(os.path.realpath(__file__)),
                     'test.mp4'
