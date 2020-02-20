@@ -25,7 +25,7 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
 
     def get_template_configs(self):
         return [
-            dict(type='settings', custom_bindings=False, template='dropbox_timelapse_settings.jinja2')
+            dict(type='settings', custom_bindings=False)
         ]
 
     def get_update_information(self):
@@ -95,6 +95,7 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
 
 
 __plugin_name__ = "Dropbox Timelapse Plugin"
+__plugin_pythoncompat__ = ">=2.7,<4"
 
 
 def __plugin_load__():
