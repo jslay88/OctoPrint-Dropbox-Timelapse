@@ -2,20 +2,65 @@
 from __future__ import absolute_import
 
 import octoprint.plugin
+from octoprint.events import Events
+import os
 import dropbox
 from dropbox.files import WriteMode
 from dropbox.exceptions import ApiError, AuthError
 
-
 class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
                              octoprint.plugin.EventHandlerPlugin,
                              octoprint.plugin.TemplatePlugin,
-                             octoprint.plugin.RestartNeedingPlugin):
+                             octoprint.plugin.RestartNeedingPlugin,
+                             octoprint.plugin.StartupPlugin):
+
+    def __init__(self):
+        # fas
+        self.upload_events = {}
+
+    def _add_upload_event(self, event_name, payload_path_attribute_name):
+        # make sure the event exists
+        if hasattr(Events, event_name):
+            event = getattr(Events, event_name)
+            if event not in self.upload_events:
+                self.upload_events[event] = payload_path_attribute_name
+            else:
+                self._logger.warning('Attempted to add a duplicate movie event: %s', event_name)
+        else:
+            self._logger.warning('Attempted to add an event that does not exist: %s', event_name)
+
+    def _add_all_upload_events(self):
+        # clear the events set
+        self.upload_events = {}
+        # add the stock timelapse event
+        self.upload_events[Events.MOVIE_DONE] = 'movie'
+        # add any additional movie events that are stored within the settings
+        for additional_event in self.additional_upload_events:
+            self._add_upload_event(additional_event['event_name'], additional_event['payload_path_attribute'])
+
+    def on_after_startup(self):
+        # now we can add all of the movie events since the settings are loaded.
+        self._add_all_upload_events()
+
+    def on_settings_save(self, data):
+        octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
+        # the settings have changed, reload the movie events
+        self._add_all_upload_events()
 
     def get_settings_defaults(self):
         return dict(
             api_token=None,
-            delete_after_upload=False
+            delete_after_upload=False,
+            additional_upload_events=[
+                {
+                    'event_name': 'PLUGIN_OCTOLAPSE_MOVIE_DONE',
+                    'payload_path_attribute': 'movie'
+                },
+                {
+                    'event_name': 'PLUGIN_OCTOLAPSE_SNAPSHOT_ARCHIVE_DONE',
+                    'payload_path_attribute': 'archive'
+                }
+            ]
         )
 
     def get_settings_restricted_paths(self):
@@ -53,16 +98,25 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
     def delete_after_upload(self):
         return self._settings.get_boolean(['delete_after_upload'])
 
-    def on_event(self, event, payload):
-        from octoprint.events import Events
-        if hasattr(Events, 'PLUGIN_OCTOLAPSE_MOVIE_DONE') and event == Events.PLUGIN_OCTOLAPSE_MOVIE_DONE:
-            self.upload_timelapse(payload)
-        elif event == Events.MOVIE_DONE:
-            self.upload_timelapse(payload)
+    @property
+    def additional_upload_events(self):
+        return self._settings.get(['additional_upload_events'])
 
-    def upload_timelapse(self, payload):
-        path = payload['movie']
-        file_name = payload['movie_basename']
+    def on_event(self, event, payload):
+        if event in self.upload_events:
+            payload_path_attribute = self.upload_events[event]
+            if payload_path_attribute in payload:
+                self.upload_timelapse(payload[payload_path_attribute])
+            else:
+                self._logger.error(
+                    "Unable to find the specified payload path attribute '%s' within the %s event."
+                    , payload_path_attribute, event
+                )
+
+    def upload_timelapse(self, path):
+        # just use the path to get the file name.  This requires fewer settings, and a name might not exist
+        # for every event we are interested in
+        file_name = os.path.basename(path)
         if self.api_token:
             db = dropbox.Dropbox(self.api_token)
         else:
@@ -90,7 +144,6 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
                 else:
                     self._logger.info(e)
         if delete:
-            import os
             self._logger.info('Deleting %s from local disk...' % file_name)
             os.remove(path)
             self._logger.info('Deleted %s from local disk.' % file_name)
