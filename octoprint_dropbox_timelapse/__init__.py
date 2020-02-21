@@ -109,7 +109,7 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
                 self.upload_timelapse(payload[payload_path_key])
             else:
                 self._logger.error(
-                    "Unable to find the specified payload path attribute '%s' within the %s event."
+                    "Unable to find the '%s' key within the %s event payload."
                     , payload_path_key, event
                 )
 
