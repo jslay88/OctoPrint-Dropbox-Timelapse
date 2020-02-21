@@ -18,12 +18,12 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
         # fas
         self.upload_events = {}
 
-    def _add_upload_event(self, event_name, payload_path_attribute_name):
+    def _add_upload_event(self, event_name, payload_path_key):
         # make sure the event exists
         if hasattr(Events, event_name):
             event = getattr(Events, event_name)
             if event not in self.upload_events:
-                self.upload_events[event] = payload_path_attribute_name
+                self.upload_events[event] = payload_path_key
             else:
                 self._logger.warning('Attempted to add a duplicate movie event: %s', event_name)
         else:
@@ -36,7 +36,7 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
         self.upload_events[Events.MOVIE_DONE] = 'movie'
         # add any additional movie events that are stored within the settings
         for additional_event in self.additional_upload_events:
-            self._add_upload_event(additional_event['event_name'], additional_event['payload_path_attribute'])
+            self._add_upload_event(additional_event['event_name'], additional_event['payload_path_key'])
 
     def on_after_startup(self):
         # now we can add all of the movie events since the settings are loaded.
@@ -54,11 +54,11 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
             additional_upload_events=[
                 {
                     'event_name': 'PLUGIN_OCTOLAPSE_MOVIE_DONE',
-                    'payload_path_attribute': 'movie'
+                    'payload_path_key': 'movie'
                 },
                 {
                     'event_name': 'PLUGIN_OCTOLAPSE_SNAPSHOT_ARCHIVE_DONE',
-                    'payload_path_attribute': 'archive'
+                    'payload_path_key': 'archive'
                 }
             ]
         )
@@ -104,13 +104,13 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
 
     def on_event(self, event, payload):
         if event in self.upload_events:
-            payload_path_attribute = self.upload_events[event]
-            if payload_path_attribute in payload:
-                self.upload_timelapse(payload[payload_path_attribute])
+            payload_path_key = self.upload_events[event]
+            if payload_path_key in payload:
+                self.upload_timelapse(payload[payload_path_key])
             else:
                 self._logger.error(
                     "Unable to find the specified payload path attribute '%s' within the %s event."
-                    , payload_path_attribute, event
+                    , payload_path_key, event
                 )
 
     def upload_timelapse(self, path):
