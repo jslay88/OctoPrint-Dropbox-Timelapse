@@ -6,7 +6,7 @@ from octoprint.events import Events
 import os
 import dropbox
 from dropbox.files import WriteMode
-from dropbox.exceptions import ApiError, AuthError
+from dropbox.exceptions import ApiError, AuthError, BadInputError
 
 
 class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
@@ -107,8 +107,23 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
         if event in self.upload_events:
             payload_path_key = self.upload_events[event]
             if payload_path_key in payload:
-                self.upload_timelapse(payload[payload_path_key])
+                file_path = payload[payload_path_key]
+                file_name = os.path.basename(file_path)
+                self._plugin_manager.send_plugin_message(
+                    self._identifier, {'type': 'upload-start', 'file_name': file_name}
+                )
+                if self.upload_timelapse(file_path):
+                    self._plugin_manager.send_plugin_message(
+                        self._identifier, {'type': 'upload-success', 'file_name': file_name}
+                    )
+                else:
+                    self._plugin_manager.send_plugin_message(
+                        self._identifier, {'type': 'upload-failed', 'file_name': file_name}
+                    )
             else:
+                self._plugin_manager.send_plugin_message(
+                    self._identifier, {'type': 'upload-failed', 'file_name': "UNKNOWN"}
+                )
                 self._logger.error(
                     "Unable to find the '%s' key within the %s event payload."
                     , payload_path_key, event
@@ -118,24 +133,31 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
         # just use the path to get the file name.  This requires fewer settings, and a name might not exist
         # for every event we are interested in
         file_name = os.path.basename(path)
+
         if self.api_token:
             db = dropbox.Dropbox(self.api_token)
         else:
-            self._logger.info('No Dropbox API Token Defined! Cannot Upload Timelapse %s!' % file_name)
-            return
+            self._logger.info('No Dropbox API Token Defined! Cannot Upload Timelapse %s!', file_name)
+            return False
 
         delete = self.delete_after_upload
 
         try:
             db.users_get_current_account()
-        except AuthError:
-            self._logger.info('Invalid Dropbox API Token! Cannot Upload Timelapse %s!' % file_name)
+        except (
+                AuthError, BadInputError
+        ):
+            # catch more errors
+            self._logger.exception(
+                'There was a problem authenticating to your Dropbox account.  Either the token is invalid, or it is '
+                'not in the correct format.  Cannot Upload Timelapse %s!', file_name)
+            return False
 
         with open(path, 'rb') as f:
-            self._logger.info('Uploading %s to Dropbox...' % file_name)
+            self._logger.info('Uploading %s to Dropbox...', file_name)
             try:
                 db.files_upload(f.read(), '/'+file_name, mode=WriteMode('overwrite'))
-                self._logger.info('Uploaded %s to Dropbox!' % file_name)
+                self._logger.info('Uploaded %s to Dropbox!', file_name)
             except ApiError as e:
                 delete = False
                 if e.error.is_path() and e.error.get_path().error.is_insufficient_space():
@@ -144,10 +166,20 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
                     self._logger.info(e.user_message_text)
                 else:
                     self._logger.info(e)
+                return False
+
         if delete:
-            self._logger.info('Deleting %s from local disk...' % file_name)
-            os.remove(path)
-            self._logger.info('Deleted %s from local disk.' % file_name)
+            try:
+                self._logger.info('Deleting %s from local disk...', file_name)
+                os.remove(path)
+                self._logger.info('Deleted %s from local disk.', file_name)
+            except (OSError, IOError):
+                self._logger.exception('Failed to delte %s from local disk.', file_name)
+                self._plugin_manager.send_plugin_message(
+                    self._identifier, {'type': 'delete-failed', 'file_name': file_name}
+                )
+
+        return True
 
     def get_assets(self):
         return dict(
