@@ -8,11 +8,12 @@ import dropbox
 from dropbox.files import WriteMode
 from dropbox.exceptions import ApiError, AuthError
 
-class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
-                             octoprint.plugin.EventHandlerPlugin,
+
+class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
                              octoprint.plugin.TemplatePlugin,
-                             octoprint.plugin.RestartNeedingPlugin,
-                             octoprint.plugin.StartupPlugin):
+                             octoprint.plugin.SettingsPlugin,
+                             octoprint.plugin.EventHandlerPlugin,
+                             octoprint.plugin.AssetPlugin):
 
     def __init__(self):
         # fas
@@ -70,7 +71,7 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
 
     def get_template_configs(self):
         return [
-            dict(type='settings', custom_bindings=False, template='dropbox_timelapse_settings.jinja2')
+            dict(type='settings', custom_bindings=True, template='dropbox_timelapse_settings.jinja2')
         ]
 
     def get_update_information(self):
@@ -147,6 +148,11 @@ class DropboxTimelapsePlugin(octoprint.plugin.SettingsPlugin,
             self._logger.info('Deleting %s from local disk...' % file_name)
             os.remove(path)
             self._logger.info('Deleted %s from local disk.' % file_name)
+
+    def get_assets(self):
+        return dict(
+            js=["js/settings.js"]
+        )
 
 
 __plugin_name__ = "Dropbox Timelapse Plugin"

@@ -1,18 +1,48 @@
-<h4>Dropbox Timelapse Settings</h4>
+<div id="dropbox_timelapse_settings">
+    <h4>Dropbox Timelapse Settings</h4>
 
-<p>You must provide an API Token to be able to upload rendered timelapses to Dropbox.</p>
-<p>To do this, <a href="https://www.dropbox.com/developers/apps/create" target="_blank">create a Dropbox App</a>,
-    select 'Dropbox API' -> 'App Folder' -> Provide Folder Name.</p>
-<p>Once the app is created, scroll down to the `OAuth 2` section, and click `Generate Token'. Paste the token here.</p>
+    <p>You must provide an API Token to be able to upload rendered timelapses to Dropbox.</p>
+    <p>To do this, <a href="https://www.dropbox.com/developers/apps/create" target="_blank">create a Dropbox App</a>,
+        select 'Dropbox API' -> 'App Folder' -> Provide Folder Name.</p>
+    <p>Once the app is created, scroll down to the `OAuth 2` section, and click `Generate Token'. Paste the token here.</p>
 
-<form class="form-horizontal" onsubmit="return false;">
-    <p>
-        <label for="dropbox_timelapse_api_token"><strong>API Token</strong></label>
-        <input class="input-text input-block-level" type="text" id="dropbox_timelapse_api_token" data-bind="value: settings.plugins.dropbox_timelapse.api_token">
-    </p>
-
-    <p>
-        <label for="dropbox_timelapse_delete_after_upload"><strong>Delete After Upload?</strong></label>
-        <input class="input-checkbox" type="checkbox" id="dropbox_timelapse_delete_after_upload" data-bind="checked: settings.plugins.dropbox_timelapse.delete_after_upload">
-    </p>
-</form>
+    <form class="form-horizontal" onsubmit="return false;">
+        <p>
+            <label for="dropbox_timelapse_api_token"><strong>API Token</strong></label>
+            <input class="input-text input-block-level" type="text" id="dropbox_timelapse_api_token" data-bind="value: plugin_settings.api_token">
+        </p>
+        <p>
+            <label for="dropbox_timelapse_delete_after_upload"><strong>Delete After Upload?</strong></label>
+            <input class="input-checkbox" type="checkbox" id="dropbox_timelapse_delete_after_upload" data-bind="checked: plugin_settings.delete_after_upload">
+        </p>
+        <hr/>
+        <h5>Custom Events</h5>
+        <p>Here you can add custom events that will trigger an upload to Dropbox.  You need the event name, as well as the payload key that contains the file path.</p>
+        <p><b>Note</b>:  The stock timelapse movie done event will ALWAYS trigger an upload, and does not need to be entered here.</p>
+        <table class="table table-striped table-hover table-condensed table-hover octolapse-table-list">
+            <thead>
+            <tr>
+                <th>Custom Event Name</th>
+                <th>Payload Path Key</th>
+                <th style="width:55px; text-align:center;">Action</th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: plugin_settings.additional_upload_events">
+            <tr>
+                <td>
+                    <input class="input-text input-block-level" type="text" data-bind="value: $data.event_name">
+                </td>
+                <td>
+                    <input class="input-text input-block-level" type="text" data-bind="attr: {id: 'additional_upload_event_payload_path_key_' + $index() }, value: $data.payload_path_key">
+                </td>
+                <td style="text-align:center;">
+                    <button class="btn btn-small" type="button" title="Delete Custom Event" data-bind="click: function() { $parent.removeUploadEvent($index());}"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="span12 text-center">
+            <button class="btn" type="button" data-bind="click: addUploadEvent"><i class="fa fa-plus"></i> Add Custom Event</button>
+        </div>
+    </form>
+</div>
