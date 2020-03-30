@@ -1,3 +1,5 @@
+# This file is purely for testing purposes. Do not use this for a real OctoPrint install
+
 accessControl:
     enabled: false
 api:
@@ -5,6 +7,9 @@ api:
 devel:
     virtualPrinter:
         enabled: true
+        autoconnect: true
+        baudrate: 0
+        port: VIRTUAL
 plugins:
     announcements:
         _config_version: 1
