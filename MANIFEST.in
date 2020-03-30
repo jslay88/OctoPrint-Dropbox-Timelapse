@@ -1,2 +1,3 @@
 include README.md
 recursive-include octoprint_dropbox_timelapse/templates *
+recursive-include octoprint_dropbox_timelapse/static *
