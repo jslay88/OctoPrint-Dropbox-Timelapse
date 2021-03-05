@@ -3,16 +3,25 @@ from __future__ import absolute_import
 
 import octoprint.plugin
 from octoprint.events import Events
-import os
-import dropbox
+from octoprint.server import user_permission
+from oauth2client.file import Storage
+from oauth2client.client import flow_from_clientsecrets
+
+import os, dropbox, json, flask
 from dropbox.files import WriteMode
 from dropbox.exceptions import ApiError, AuthError, BadInputError
 
+# This OAuth 2.0 access scope allows an application to upload files to the
+# authenticated user's YouTube channel, but doesn't allow other types of access.
+YOUTUBE_UPLOAD_SCOPE = "https://www.googleapis.com/auth/youtube.upload"
+YOUTUBE_API_SERVICE_NAME = "youtube"
+YOUTUBE_API_VERSION = "v3"
 
 class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
                              octoprint.plugin.TemplatePlugin,
                              octoprint.plugin.SettingsPlugin,
                              octoprint.plugin.EventHandlerPlugin,
+                             octoprint.plugin.SimpleApiPlugin,
                              octoprint.plugin.AssetPlugin):
 
     def __init__(self):
@@ -61,7 +70,8 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
                     'event_name': 'PLUGIN_OCTOLAPSE_SNAPSHOT_ARCHIVE_DONE',
                     'payload_path_key': 'archive'
                 }
-            ]
+            ],
+            installed_version=self._plugin_version
         )
 
     def get_settings_restricted_paths(self):
@@ -102,6 +112,45 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
     @property
     def additional_upload_events(self):
         return self._settings.get(['additional_upload_events'])
+
+    ##~~ SimpleApiPlugin mixin
+
+    def get_api_commands(self):
+        return dict(gen_secret=["json_data"], authorize=["auth_code"])
+
+    def on_api_command(self, command, data):
+        if not user_permission.can():
+            return flask.make_response("Insufficient rights", 403)
+
+        client_secrets = "{}/client_secrets.json".format(self.get_plugin_data_folder())
+        credentials_file = "{}/credentials.json".format(self.get_plugin_data_folder())
+
+        if command == "gen_secret":
+            # write out our client_secrets.json file
+            with open(client_secrets, "w") as f:
+                f.write(json.dumps(data["json_data"]))
+            self._settings.set(["cert_saved"], True)
+            self._settings.save()
+
+            flow = flow_from_clientsecrets(client_secrets, scope=YOUTUBE_UPLOAD_SCOPE, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+            auth_url = flow.step1_get_authorize_url()
+
+            return flask.jsonify(dict(cert_saved=True, url=auth_url))
+
+        if command == "authorize":
+            self._logger.info("Attempting to authorize Google App")
+
+            flow = flow_from_clientsecrets(client_secrets, scope=YOUTUBE_UPLOAD_SCOPE, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+            credentials = flow.step2_exchange(data["auth_code"])
+
+            storage = Storage(credentials_file)
+            storage.put(credentials)
+
+            self._settings.set(["cert_authorized"], True)
+            self._settings.save()
+            return flask.jsonify(dict(authorized=True))
+
+        ##~~ AssetPlugin mixin
 
     def on_event(self, event, payload):
         if event in self.upload_events:
@@ -199,4 +248,3 @@ def __plugin_load__():
     __plugin_hooks__ = {
         "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
     }
-
