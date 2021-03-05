@@ -6,6 +6,8 @@ from octoprint.events import Events
 from octoprint.server import user_permission
 from oauth2client.file import Storage
 from oauth2client.client import flow_from_clientsecrets
+from apiclient.discovery import build
+from apiclient.http import MediaFileUpload
 
 import os, dropbox, json, flask
 from dropbox.files import WriteMode
@@ -61,6 +63,8 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
         return dict(
             api_token=None,
             delete_after_upload=False,
+            tags="",
+            privacy_status="private",
             additional_upload_events=[
                 {
                     'event_name': 'PLUGIN_OCTOLAPSE_MOVIE_DONE',
@@ -108,6 +112,14 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
     @property
     def delete_after_upload(self):
         return self._settings.get_boolean(['delete_after_upload'])
+
+    @property
+    def tags(self):
+        return self._settings.get(['tags'])
+
+    @property
+    def privacy_status(self):
+        return self._settings.get(['privacy_status'])
 
     @property
     def additional_upload_events(self):
@@ -183,41 +195,63 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
         # for every event we are interested in
         file_name = os.path.basename(path)
 
-        if self.api_token:
-            db = dropbox.Dropbox(self.api_token)
-        else:
+        client_secrets = "{}/client_secrets.json".format(self.get_plugin_data_folder())
+        credentials_file = "{}/credentials.json".format(self.get_plugin_data_folder())
+        storage = Storage(credentials_file)
+        credentials = storage.get()
+
+        if credentials is None or credentials.invalid:
             self._logger.info('No Dropbox API Token Defined! Cannot Upload Timelapse %s!', file_name)
             return False
 
-        delete = self.delete_after_upload
+        if credentials.access_token_expired:
+            credentials.refresh(httplib2.Http())
+            storage = Storage(credentials_file)
+            storage.put(credentials)
 
-        try:
-            db.users_get_current_account()
-        except (
-                AuthError, BadInputError
-        ):
-            # catch more errors
-            self._logger.exception(
-                'There was a problem authenticating to your Dropbox account.  Either the token is invalid, or it is '
-                'not in the correct format.  Cannot Upload Timelapse %s!', file_name)
-            return False
+        youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, credentials=credentials)
 
-        with open(path, 'rb') as f:
-            self._logger.info('Uploading %s to Dropbox...', file_name)
-            try:
-                db.files_upload(f.read(), '/'+file_name, mode=WriteMode('overwrite'))
+        tags = None
+        if self.tags:
+            tags = self.tags.split(",")
+
+        body=dict(
+          snippet=dict(
+            title=file_name,
+            tags=tags,
+          ),
+          status=dict(
+            privacyStatus=self.privacy_status
+          )
+        )
+
+        # Call the API's videos.insert method to create and upload the video.
+        insert_request = youtube.videos().insert(
+          part=",".join(body.keys()),
+          body=body,
+          # The chunksize parameter specifies the size of each chunk of data, in
+          # bytes, that will be uploaded at a time. Set a higher value for
+          # reliable connections as fewer chunks lead to faster uploads. Set a lower
+          # value for better recovery on less reliable connections.
+          #
+          # Setting "chunksize" equal to -1 in the code below means that the entire
+          # file will be uploaded in a single HTTP request. (If the upload fails,
+          # it will still be retried where it left off.) This is usually a best
+          # practice, but if you're using Python older than 2.6 or if you're
+          # running on App Engine, you should set the chunksize to something like
+          # 1024 * 1024 (1 megabyte).
+          media_body=MediaFileUpload(path, chunksize=-1, resumable=True)
+        )
+
+        _status, response = insert_request.next_chunk()
+        if response is not None:
+            if 'id' in response:
                 self._logger.info('Uploaded %s to Dropbox!', file_name)
-            except ApiError as e:
-                delete = False
-                if e.error.is_path() and e.error.get_path().error.is_insufficient_space():
-                    self._logger.info('Cannot upload to Dropbox! Insufficient space on Dropbox!')
-                elif e.user_message_text:
-                    self._logger.info(e.user_message_text)
-                else:
-                    self._logger.info(e)
+            else:
+                self._logger.exception("The upload failed with an unexpected response: %s", response)
                 return False
 
-        if delete:
+        if self.delete_after_upload:
             try:
                 self._logger.info('Deleting %s from local disk...', file_name)
                 os.remove(path)

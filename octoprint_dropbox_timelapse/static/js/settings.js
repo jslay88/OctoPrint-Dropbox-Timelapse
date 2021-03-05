@@ -18,6 +18,11 @@ $(function() {
         self.cert_file_data = undefined;
         self.auth_code = ko.observable('');
         self.auth_url = ko.observable('#');
+        self.valid_privacy_statuses = ko.observableArray([
+          { name : 'Private', value : 'private' },
+          { name : 'Unlisted', value : 'unlisted' },
+          { name : 'Public', value : 'public' }
+        ]);
 
         var certFileuploadOptions = {
             dataType: "json",

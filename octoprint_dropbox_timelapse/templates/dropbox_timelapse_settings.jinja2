@@ -1,6 +1,8 @@
 <div id="dropbox_timelapse_settings">
     <h4>Youtube Timelapse Settings <small>{{ _('Version') }}: <span data-bind="text: settingsViewModel.settings.plugins.dropbox_timelapse.installed_version"></span></small></h4>
 
+    <h5>Google Oauth</h5>
+
     <form class="form-horizontal" id="jsonFile" name="jsonFile" enctype="multipart/form-data" method="post" data-bind="visible: !cert_saved()">
         <div class="control-group">
             <label class="control-label">client_secrets.json</label>
@@ -44,16 +46,23 @@
         </div>
     </div>
 
+    <h5>Youtube settings</h5>
 
+    <p>
+      <div class="control-group">
+          <label for="dropbox_timelapse_privacy_status">Privacy status:</label>
 
+          <select class="form-control" id="dropbox_timelapse_privacy_status"
+                  data-bind="options: valid_privacy_statuses,optionsText: 'name',optionsValue: 'value',value: plugin_settings.privacy_status"></select>
+      </div>
+    </p>
 
+    <p>
+        <label for="dropbox_timelapse_tags">Tags:</label>
+        <input class="input-text input-block-level" type="text" id="dropbox_timelapse_tags" data-bind="value: plugin_settings.tags">
+    </p
 
-
-
-    <p>You must provide an API Token to be able to upload rendered timelapses to Dropbox.</p>
-    <p>To do this, <a href="https://www.dropbox.com/developers/apps/create" target="_blank">create a Dropbox App</a>,
-        select 'Dropbox API' -> 'App Folder' -> Provide Folder Name.</p>
-    <p>Once the app is created, scroll down to the `OAuth 2` section, and click `Generate Token'. Paste the token here.</p>
+    <h5>Other settings</h5>
 
     <form class="form-horizontal" onsubmit="return false;">
         <p>
