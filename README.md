@@ -1,4 +1,4 @@
-# OctoPrint-Dropbox-Timelapse
+# OctoPrint-Youtube-Timelapse
 
 Automatically upload rendered timelapses to Dropbox. Can also delete after upload to save space on the Raspberry Pi
 SD Card.
@@ -8,7 +8,7 @@ SD Card.
 Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager)
 or manually using this URL:
 
-    https://github.com/jslay88/OctoPrint-Dropbox-Timelapse/archive/master.zip
+    https://github.com/ryanfox1985/OctoPrint-Youtube-Timelapse/archive/master.zip
 
 ## Configuration
 

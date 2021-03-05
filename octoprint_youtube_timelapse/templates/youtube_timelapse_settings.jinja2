@@ -1,5 +1,5 @@
-<div id="dropbox_timelapse_settings">
-    <h4>Youtube Timelapse Settings <small>{{ _('Version') }}: <span data-bind="text: settingsViewModel.settings.plugins.dropbox_timelapse.installed_version"></span></small></h4>
+<div id="youtube_timelapse_settings">
+    <h4>Youtube Timelapse Settings <small>{{ _('Version') }}: <span data-bind="text: settingsViewModel.settings.plugins.youtube_timelapse.installed_version"></span></small></h4>
 
     <h5>Google Oauth</h5>
 
@@ -52,17 +52,17 @@
       <h5>Youtube settings</h5>
 
       <div class="control-group" title="Youtube privacy status">
-          <label class="control-label" for="dropbox_timelapse_privacy_status">Privacy status</label>
+          <label class="control-label" for="youtube_timelapse_privacy_status">Privacy status</label>
           <div class="controls">
-              <select id="dropbox_timelapse_privacy_status"
+              <select id="youtube_timelapse_privacy_status"
                       data-bind="options: valid_privacy_statuses,optionsText: 'name',optionsValue: 'value',value: plugin_settings.privacy_status"></select>
           </div>
       </div>
 
       <div class="control-group" title="Youtube tags">
-          <label class="control-label" for="dropbox_timelapse_tags">Tags (comma separated)</label>
+          <label class="control-label" for="youtube_timelapse_tags">Tags (comma separated)</label>
           <div class="controls">
-              <input class="input-block-level input-block-level" type="text" id="dropbox_timelapse_tags" data-bind="value: plugin_settings.tags">
+              <input class="input-block-level input-block-level" type="text" id="youtube_timelapse_tags" data-bind="value: plugin_settings.tags">
           </div>
       </div>
 
@@ -73,7 +73,7 @@
       <div class="control-group">
           <div class="controls">
               <label class="checkbox">
-                  <input class="input-checkbox" type="checkbox" id="dropbox_timelapse_delete_after_upload" data-bind="checked: plugin_settings.delete_after_upload"> Delete After Upload
+                  <input class="input-checkbox" type="checkbox" id="youtube_timelapse_delete_after_upload" data-bind="checked: plugin_settings.delete_after_upload"> Delete After Upload
               </label>
           </div>
       </div>
@@ -81,7 +81,7 @@
       <hr/>
 
       <h5>Custom Events</h5>
-      <p>Here you can add custom events that will trigger an upload to Dropbox.  You need the event name, as well as the payload key that contains the file path.</p>
+      <p>Here you can add custom events that will trigger an upload to Youtube.  You need the event name, as well as the payload key that contains the file path.</p>
       <p><b>Note</b>:  The stock timelapse movie done event will ALWAYS trigger an upload, and does not need to be entered here.</p>
       <table class="table table-striped table-hover table-condensed table-hover octolapse-table-list">
           <thead>

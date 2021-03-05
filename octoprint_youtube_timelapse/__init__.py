@@ -9,9 +9,7 @@ from oauth2client.client import flow_from_clientsecrets
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
 
-import os, dropbox, json, flask
-from dropbox.files import WriteMode
-from dropbox.exceptions import ApiError, AuthError, BadInputError
+import os, json, flask
 
 # This OAuth 2.0 access scope allows an application to upload files to the
 # authenticated user's YouTube channel, but doesn't allow other types of access.
@@ -19,7 +17,7 @@ YOUTUBE_UPLOAD_SCOPE = "https://www.googleapis.com/auth/youtube.upload"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
-class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
+class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                              octoprint.plugin.TemplatePlugin,
                              octoprint.plugin.SettingsPlugin,
                              octoprint.plugin.EventHandlerPlugin,
@@ -85,23 +83,23 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
 
     def get_template_configs(self):
         return [
-            dict(type='settings', custom_bindings=True, template='dropbox_timelapse_settings.jinja2')
+            dict(type='settings', custom_bindings=True, template='youtube_timelapse_settings.jinja2')
         ]
 
     def get_update_information(self):
         return dict(
-            dropbox_timelapse=dict(
-                displayName="Dropbox Timelapse Plugin",
+            youtube_timelapse=dict(
+                displayName="Youtube Timelapse Plugin",
                 displayVersion=self._plugin_version,
 
                 # version check: github repository
                 type="github_release",
-                user="jslay88",
-                repo="OctoPrint-Dropbox-Timelapse",
+                user="ryanfox1985",
+                repo="OctoPrint-Youtube-Timelapse",
                 current=self._plugin_version,
 
                 # update method: pip
-                pip="https://github.com/jslay88/OctoPrint-Dropbox-Timelapse/archive/{target_version}.zip"
+                pip="https://github.com/ryanfox1985/OctoPrint-Youtube-Timelapse/archive/{target_version}.zip"
             )
         )
 
@@ -201,7 +199,7 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
         credentials = storage.get()
 
         if credentials is None or credentials.invalid:
-            self._logger.info('No Dropbox API Token Defined! Cannot Upload Timelapse %s!', file_name)
+            self._logger.info('No Google credentials Defined! Cannot Upload Timelapse %s!', file_name)
             return False
 
         if credentials.access_token_expired:
@@ -246,7 +244,7 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
         _status, response = insert_request.next_chunk()
         if response is not None:
             if 'id' in response:
-                self._logger.info('Uploaded %s to Dropbox!', file_name)
+                self._logger.info('Uploaded %s to Youtube!', file_name)
             else:
                 self._logger.exception("The upload failed with an unexpected response: %s", response)
                 return False
@@ -270,13 +268,13 @@ class DropboxTimelapsePlugin(octoprint.plugin.StartupPlugin,
         )
 
 
-__plugin_name__ = "Dropbox Timelapse Plugin"
+__plugin_name__ = "Youtube Timelapse Plugin"
 __plugin_pythoncompat__ = ">=2.7,<4"
 
 
 def __plugin_load__():
     global __plugin_implementation__
-    __plugin_implementation__ = DropboxTimelapsePlugin()
+    __plugin_implementation__ = YoutubeTimelapsePlugin()
 
     global __plugin_hooks__
     __plugin_hooks__ = {

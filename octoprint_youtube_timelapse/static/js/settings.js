@@ -5,7 +5,7 @@ $(function() {
         self.event_name = ko.observable(event_name);
         self.payload_path_key = ko.observable(payload_path_key);
     }
-    function DropboxTimelapseSettingsViewModel(parameters) {
+    function YoutubeTimelapseSettingsViewModel(parameters) {
         var self = this;
 
         // assign the injected parameters, e.g.:
@@ -71,7 +71,7 @@ $(function() {
                 let lines = e.target.result;
                 var json_data = JSON.parse(lines);
                 $.ajax({
-                    url: API_BASEURL + "plugin/dropbox_timelapse",
+                    url: API_BASEURL + "plugin/youtube_timelapse",
                     type: "POST",
                     dataType: "json",
                     data: JSON.stringify({command: "gen_secret", json_data: json_data}),
@@ -93,7 +93,7 @@ $(function() {
             if(self.auth_code() === '') return;
             self.authorizing(true);
             $.ajax({
-                url: API_BASEURL + "plugin/dropbox_timelapse",
+                url: API_BASEURL + "plugin/youtube_timelapse",
                 type: "POST",
                 dataType: "json",
                 data: JSON.stringify({command: "authorize", auth_code: self.auth_code()}),
@@ -123,7 +123,7 @@ $(function() {
 
         self.onBeforeBinding = function() {
             // Make plugin setting access a little more terse
-            self.plugin_settings = self.settings.settings.plugins.dropbox_timelapse;
+            self.plugin_settings = self.settings.settings.plugins.youtube_timelapse;
         };
         // Add a custom event
         self.addUploadEvent = function() {
@@ -141,15 +141,15 @@ $(function() {
         // Listen for plugin messages
         // This could probably be made a bit simpler.
         self.onDataUpdaterPluginMessage = function (plugin, data) {
-            if (plugin !== "dropbox_timelapse") {
+            if (plugin !== "youtube_timelapse") {
                 return;
             }
             switch (data.type) {
                 case 'upload-start':
                 {
                     var popup_options= {
-                        title: 'Uploading to Dropbox...',
-                        text: '\'' + data.file_name + '\' is uploading to dropbox now.',
+                        title: 'Uploading to Youtube...',
+                        text: '\'' + data.file_name + '\' is uploading to Youtube now.',
                         type: 'info',
                         hide: true,
                         desktop: {
@@ -163,8 +163,8 @@ $(function() {
                 case 'upload-success':
                 {
                     var popup_options= {
-                        title: 'Dropbox upload complete!',
-                        text: '\'' + data.file_name + '\' was uploaded to Dropbox successfully!.',
+                        title: 'Youtube upload complete!',
+                        text: '\'' + data.file_name + '\' was uploaded to Youtube successfully!.',
                         type: 'success',
                         hide: false,
                         desktop: {
@@ -179,8 +179,8 @@ $(function() {
                 case 'upload-failed':
                 {
                     var popup_options= {
-                        title: 'Droopbox upload failed!',
-                        text: '\'' + data.file_name + '\' failed to upload to Dropbox!  Please check plugin_dropbox_timelapse.log for more details.',
+                        title: 'Youtube upload failed!',
+                        text: '\'' + data.file_name + '\' failed to upload to Youtube!  Please check plugin_youtube_timelapse.log for more details.',
                         type: 'error',
                         hide: false,
                         desktop: {
@@ -195,8 +195,8 @@ $(function() {
                 case 'delete-failed':
                 {
                     var popup_options= {
-                        title: 'Delete After Dropbox Upload failed!',
-                        text: '\'' + data.file_name + '\' could not be deleted.  Please check plugin_dropbox_timelapse.log for more details.',
+                        title: 'Delete After Youtube Upload failed!',
+                        text: '\'' + data.file_name + '\' could not be deleted.  Please check plugin_youtube_timelapse.log for more details.',
                         type: 'error',
                         hide: false,
                         desktop: {
@@ -209,7 +209,7 @@ $(function() {
                     break;
                 }
                 defalut:
-                    console.error("dropbox_timelapse - An unknown plugin message type of " + data.type + "was received.");
+                    console.error("youtube_timelapse - An unknown plugin message type of " + data.type + "was received.");
                     break;
             }
         };
@@ -248,8 +248,8 @@ $(function() {
     }
 
     OCTOPRINT_VIEWMODELS.push([
-        DropboxTimelapseSettingsViewModel,
+        YoutubeTimelapseSettingsViewModel,
         ["settingsViewModel"],
-        ["#dropbox_timelapse_settings"]
+        ["#youtube_timelapse_settings"]
     ]);
 });
