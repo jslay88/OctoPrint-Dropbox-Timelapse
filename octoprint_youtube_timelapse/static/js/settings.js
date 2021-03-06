@@ -44,11 +44,11 @@ $(function() {
             }
         };
 
-        $("#googledrivebackup_cert_file").fileupload(certFileuploadOptions);
+        $("#youtube_timelapse_cert_file").fileupload(certFileuploadOptions);
 
         self.onBeforeBinding = function() {
-        self.cert_saved(self.settingsViewModel.settings.plugins.googledrivebackup.cert_saved());
-        self.cert_authorized(self.settingsViewModel.settings.plugins.googledrivebackup.cert_authorized());
+        self.cert_saved(self.settingsViewModel.settings.plugins.youtube_timelapse.cert_saved());
+        self.cert_authorized(self.settingsViewModel.settings.plugins.youtube_timelapse.cert_authorized());
         }
 
         self.uploadCertFile = function(){
@@ -250,6 +250,6 @@ $(function() {
     OCTOPRINT_VIEWMODELS.push([
         YoutubeTimelapseSettingsViewModel,
         ["settingsViewModel"],
-        ["#youtube_timelapse_settings"]
+        ["#settings_plugin_youtube_timelapse"]
     ]);
 });
