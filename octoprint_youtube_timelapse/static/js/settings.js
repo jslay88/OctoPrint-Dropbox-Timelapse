@@ -46,11 +46,6 @@ $(function() {
 
         $("#youtube_timelapse_cert_file").fileupload(certFileuploadOptions);
 
-        self.onBeforeBinding = function() {
-        self.cert_saved(self.settingsViewModel.settings.plugins.youtube_timelapse.cert_saved());
-        self.cert_authorized(self.settingsViewModel.settings.plugins.youtube_timelapse.cert_authorized());
-        }
-
         self.uploadCertFile = function(){
             if (self.cert_file_data === undefined) return;
             self.authorizing(true);
@@ -112,11 +107,8 @@ $(function() {
 
         self.deleteCertFiles = function(){
             self.cert_saved(false);
-        self.cert_authorized(false);
+            self.cert_authorized(false);
         }
-
-
-
 
         self.settings = parameters[0];
         self.plugin_settings = null;
@@ -124,6 +116,9 @@ $(function() {
         self.onBeforeBinding = function() {
             // Make plugin setting access a little more terse
             self.plugin_settings = self.settings.settings.plugins.youtube_timelapse;
+            debugger;
+            self.cert_saved(self.settingsViewModel.settings.plugins.youtube_timelapse.cert_saved());
+            self.cert_authorized(self.settingsViewModel.settings.plugins.youtube_timelapse.cert_authorized());
         };
         // Add a custom event
         self.addUploadEvent = function() {

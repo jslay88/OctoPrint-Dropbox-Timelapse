@@ -14,7 +14,7 @@ plugin_package = "octoprint_youtube_timelapse"
 plugin_name = "OctoPrint-Youtube-Timelapse"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "0.1.5"
+plugin_version = "0.1.6"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module

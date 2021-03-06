@@ -59,7 +59,6 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
 
     def get_settings_defaults(self):
         return dict(
-            api_token=None,
             delete_after_upload=False,
             tags="",
             privacy_status="private",
@@ -73,12 +72,9 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                     'payload_path_key': 'archive'
                 }
             ],
+            cert_saved=False,
+			cert_authorized=False,
             installed_version=self._plugin_version
-        )
-
-    def get_settings_restricted_paths(self):
-        return dict(
-            admin=[['api_token'], ]
         )
 
     def get_template_configs(self):
@@ -102,10 +98,6 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                 pip="https://github.com/ryanfox1985/OctoPrint-Youtube-Timelapse/archive/{target_version}.zip"
             )
         )
-
-    @property
-    def api_token(self):
-        return self._settings.get(['api_token'])
 
     @property
     def delete_after_upload(self):
