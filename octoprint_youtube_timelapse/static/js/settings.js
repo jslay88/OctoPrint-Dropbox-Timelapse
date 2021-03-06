@@ -116,7 +116,6 @@ $(function() {
         self.onBeforeBinding = function() {
             // Make plugin setting access a little more terse
             self.plugin_settings = self.settings.settings.plugins.youtube_timelapse;
-            debugger;
             self.cert_saved(self.settingsViewModel.settings.plugins.youtube_timelapse.cert_saved());
             self.cert_authorized(self.settingsViewModel.settings.plugins.youtube_timelapse.cert_authorized());
         };
