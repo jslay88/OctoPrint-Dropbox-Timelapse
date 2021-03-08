@@ -261,7 +261,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
 
 
 __plugin_name__ = "Youtube Timelapse Plugin"
-__plugin_pythoncompat__ = ">=2.7,<4"
+__plugin_pythoncompat__ = ">=3,<4"
 
 
 def __plugin_load__():
