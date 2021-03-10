@@ -156,7 +156,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
         elif command == 'upload_videos':
             for entry in os.scandir(data["videos_folder"]):
                 if entry.path.endswith(".mp4"):
-                    self.upload_timelapse(entry.path, False)
+                    self.upload_timelapse(entry.path, data['upload_videos_delete_after'])
             return flask.make_response("Videos uploaded!", 200)
 
         ##~~ AssetPlugin mixin

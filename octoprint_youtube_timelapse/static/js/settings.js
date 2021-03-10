@@ -90,11 +90,14 @@ $(function() {
             if (self.videos_folder() === undefined) return;
 
             self.uploading_videos(true);
+
+            var upload_videos_delete_after = $('#upload_videos_delete_after').is(":checked");
+
             $.ajax({
                 url: API_BASEURL + "plugin/youtube_timelapse",
                 type: "POST",
                 dataType: "json",
-                data: JSON.stringify({command: "upload_videos", videos_folder: self.videos_folder()}),
+                data: JSON.stringify({command: "upload_videos", videos_folder: self.videos_folder(), upload_videos_delete_after: upload_videos_delete_after}),
                 contentType: "application/json; charset=UTF-8"
             }).done(function(data){
                 self.uploading_videos(false);
