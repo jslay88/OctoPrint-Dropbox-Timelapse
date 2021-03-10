@@ -16,6 +16,8 @@ $(function() {
         self.authorizing = ko.observable(false);
         self.cert_file_name = ko.observable('');
         self.cert_file_data = undefined;
+        self.uploading_videos = false;
+        self.videos_folder = '/home/pi/.octoprint/timelapse';
         self.auth_code = ko.observable('');
         self.auth_url = ko.observable('#');
         self.valid_privacy_statuses = ko.observableArray([
@@ -81,6 +83,25 @@ $(function() {
                     console.log("error uploading cert file");
                     self.authorizing(false);
                 });
+            }
+        }
+
+        self.uploadVideos = function(){
+            if (self.videos_folder === undefined) return;
+
+            self.uploading_videos(true);
+            $.ajax({
+                url: API_BASEURL + "plugin/youtube_timelapse",
+                type: "POST",
+                dataType: "json",
+                data: JSON.stringify({command: "upload_videos", videos_folder: self.videos_folder}),
+                contentType: "application/json; charset=UTF-8"
+            }).done(function(data){
+                self.uploading_videos(false);
+            }).fail(function(data){
+                console.log("error uploading videos");
+                self.uploading_videos(false);
+            });
             }
         }
 
