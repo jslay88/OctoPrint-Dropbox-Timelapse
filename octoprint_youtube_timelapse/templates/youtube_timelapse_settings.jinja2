@@ -43,6 +43,31 @@
             <button class="btn btn-primary" data-bind="enable: cert_authorized(), click: deleteCertFiles"><i class="fa fa-spinner fa-spin" data-bind="visible: authorizing" style="display: none;"></i> Delete</button>
         </div>
     </div>
+
+    <form class="form-horizontal" onsubmit="return false;">
+      <p>Here you can upload your previous videos already stored at:</p>
+
+      <div class="control-group" title="Timelapse videos folder">
+          <label class="control-label" for="videos_folder">Timelapse videos folder:</label>
+          <div class="controls">
+              <input class="input-block-level input-block-level" type="text" id="videos_folder" data-bind="value: plugin_settings.videos_folder">
+          </div>
+      </div>
+
+      <div class="control-group">
+          <div class="controls">
+              <label class="checkbox">
+                  <input class="input-checkbox" type="checkbox" id="upload_videos_delete_after"> Delete After Upload
+              </label>
+          </div>
+      </div>
+
+      <div class="control-group">
+          <div class="controls">
+              <button class="btn btn-primary" data-bind="click: uploadVideos"><i class="fa fa-spinner fa-spin" data-bind="visible: uploading_videos" style="display: none;"></i> Upload Videos</button>
+          </div>
+      </div>
+    </form>
 </div>
 
 <hr/>
