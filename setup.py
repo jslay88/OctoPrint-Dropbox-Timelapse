@@ -33,7 +33,7 @@ plugin_url = "https://github.com/ryanfox1985/OctoPrint-Youtube-Timelapse"
 plugin_license = "AGPLv3"
 
 # Any additional requirements besides OctoPrint should be listed here
-plugin_requires = ['oauth2client', 'google-api-python-client']
+plugin_requires = ['oauth2client', 'google-api-python-client', 'httplib2']
 
 ### --------------------------------------------------------------------------------------------------------------------
 ### More advanced options that you usually shouldn't have to touch follow after this point

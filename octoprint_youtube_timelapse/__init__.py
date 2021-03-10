@@ -9,7 +9,7 @@ from oauth2client.client import flow_from_clientsecrets
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
 
-import os, json, flask
+import os, json, flask, httplib2
 
 # This OAuth 2.0 access scope allows an application to upload files to the
 # authenticated user's YouTube channel, but doesn't allow other types of access.
