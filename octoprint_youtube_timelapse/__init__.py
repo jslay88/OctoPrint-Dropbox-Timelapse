@@ -62,6 +62,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
             delete_after_upload=False,
             tags="",
             privacy_status="private",
+            videos_folder="/home/pi/.octoprint/timelapse",
             additional_upload_events=[
                 {
                     'event_name': 'PLUGIN_OCTOLAPSE_MOVIE_DONE',
@@ -118,7 +119,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
     ##~~ SimpleApiPlugin mixin
 
     def get_api_commands(self):
-        return dict(gen_secret=["json_data"], authorize=["auth_code"])
+        return dict(gen_secret=["json_data"], authorize=["auth_code"], upload_videos=["videos_folder"])
 
     def on_api_command(self, command, data):
         if not user_permission.can():
@@ -139,7 +140,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
 
             return flask.jsonify(dict(cert_saved=True, url=auth_url))
 
-        if command == "authorize":
+        elif command == "authorize":
             self._logger.info("Attempting to authorize Google App")
 
             flow = flow_from_clientsecrets(client_secrets, scope=YOUTUBE_UPLOAD_SCOPE, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
@@ -152,10 +153,11 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
             self._settings.save()
             return flask.jsonify(dict(authorized=True))
 
-        if command == 'upload_videos':
+        elif command == 'upload_videos':
             for entry in os.scandir(data["videos_folder"]):
-                if (entry.path.endswith(".mp4"):
-                    upload_timelapse(entry.path)
+                if entry.path.endswith(".mp4"):
+                    self.upload_timelapse(entry.path, False)
+            return flask.make_response("Videos uploaded!", 200)
 
         ##~~ AssetPlugin mixin
 
@@ -168,7 +170,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                 self._plugin_manager.send_plugin_message(
                     self._identifier, {'type': 'upload-start', 'file_name': file_name}
                 )
-                if self.upload_timelapse(file_path):
+                if self.upload_timelapse(file_path, self.delete_after_upload):
                     self._plugin_manager.send_plugin_message(
                         self._identifier, {'type': 'upload-success', 'file_name': file_name}
                     )
@@ -185,7 +187,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                     , payload_path_key, event
                 )
 
-    def upload_timelapse(self, path):
+    def upload_timelapse(self, path, delete_after_upload):
         # just use the path to get the file name.  This requires fewer settings, and a name might not exist
         # for every event we are interested in
         file_name = os.path.basename(path)
@@ -246,7 +248,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                 self._logger.exception("The upload failed with an unexpected response: %s", response)
                 return False
 
-        if self.delete_after_upload:
+        if delete_after_upload:
             try:
                 self._logger.info('Deleting %s from local disk...', file_name)
                 os.remove(path)
