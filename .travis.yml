@@ -7,6 +7,12 @@ jobs:
       script:
         - eslint octoprint_youtube_timelapse
   include:
+    - language: node
+      node_js: lts/*
+      install:
+        - npm install eslint --save-dev
+      script:
+        - eslint octoprint_youtube_timelapse
     - language: python
       python: 3.9
       install:
