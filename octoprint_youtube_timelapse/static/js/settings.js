@@ -40,7 +40,7 @@ $(function() {
                 self.cert_file_name(data.files[0].name);
                 self.cert_file_data = data;
             },
-            done: function(e, data) {
+            done: function() {
                 self.cert_file_name(undefined);
                 self.cert_file_data = undefined;
             }
@@ -51,7 +51,7 @@ $(function() {
         self.uploadCertFile = function(){
             if (self.cert_file_data === undefined) return;
             self.authorizing(true);
-            var input, file, fr;
+            var file, fr;
 
             if (typeof window.FileReader !== 'function') {
               alert("The file API isn't supported on this browser yet.");
@@ -79,7 +79,7 @@ $(function() {
                         self.auth_url(data.url);
                         self.authorizing(false);
                     }
-                }).fail(function(data){
+                }).fail(function(){
                     console.log("error uploading cert file");
                     self.authorizing(false);
                 });
@@ -99,9 +99,9 @@ $(function() {
                 dataType: "json",
                 data: JSON.stringify({command: "upload_videos", videos_folder: self.videos_folder(), upload_videos_delete_after: upload_videos_delete_after}),
                 contentType: "application/json; charset=UTF-8"
-            }).done(function(data){
+            }).done(function(){
                 self.uploading_videos(false);
-            }).fail(function(data){
+            }).fail(function(){
                 console.log("error uploading videos");
                 self.uploading_videos(false);
             });
@@ -121,7 +121,7 @@ $(function() {
                     self.cert_authorized(true);
                     self.authorizing(false);
                 }
-            }).fail(function(data){
+            }).fail(function(){
                 console.log("error authorizing");
                 self.cert_authorized(false);
                 self.authorizing(false);
@@ -161,10 +161,13 @@ $(function() {
             if (plugin !== "youtube_timelapse") {
                 return;
             }
+
+            var popup_options = {};
+
             switch (data.type) {
                 case 'upload-start':
                 {
-                    var popup_options= {
+                    popup_options = {
                         title: 'Uploading to Youtube...',
                         text: '\'' + data.file_name + '\' is uploading to Youtube now.',
                         type: 'info',
@@ -179,7 +182,7 @@ $(function() {
                 }
                 case 'upload-success':
                 {
-                    var popup_options= {
+                    popup_options = {
                         title: 'Youtube upload complete!',
                         text: '\'' + data.file_name + '\' was uploaded to Youtube successfully!.',
                         type: 'success',
@@ -195,7 +198,7 @@ $(function() {
                 }
                 case 'upload-failed':
                 {
-                    var popup_options= {
+                    popup_options = {
                         title: 'Youtube upload failed!',
                         text: '\'' + data.file_name + '\' failed to upload to Youtube!  Please check plugin_youtube_timelapse.log for more details.',
                         type: 'error',
@@ -211,7 +214,7 @@ $(function() {
                 }
                 case 'delete-failed':
                 {
-                    var popup_options= {
+                    popup_options = {
                         title: 'Delete After Youtube Upload failed!',
                         text: '\'' + data.file_name + '\' could not be deleted.  Please check plugin_youtube_timelapse.log for more details.',
                         type: 'error',
@@ -225,7 +228,7 @@ $(function() {
                     // popup will take care of that!
                     break;
                 }
-                defalut:
+                default:
                     console.error("youtube_timelapse - An unknown plugin message type of " + data.type + "was received.");
                     break;
             }
