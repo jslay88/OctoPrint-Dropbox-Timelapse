@@ -2,6 +2,12 @@ install:
   - pip install pycodestyle octoprint
 
 jobs:
+  allow_failures:
+    - language: node
+      node_js: lts/*
+      script:
+        - npm install eslint --save-dev
+        - eslint octoprint_youtube_timelapse
   include:
     - language: python
       python: 3.9
