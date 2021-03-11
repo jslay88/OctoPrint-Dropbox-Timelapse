@@ -9,13 +9,17 @@ from oauth2client.client import flow_from_clientsecrets
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
 
-import os, json, flask, httplib2
+import os
+import json
+import flask
+import httplib2
 
 # This OAuth 2.0 access scope allows an application to upload files to the
-# authenticated user's YouTube channel, but doesn't allow other types of access.
+# authenticated user's YouTube channel, but doesn't allow other types of access
 YOUTUBE_UPLOAD_SCOPE = "https://www.googleapis.com/auth/youtube.upload"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
+
 
 class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                              octoprint.plugin.TemplatePlugin,
@@ -74,7 +78,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                 }
             ],
             cert_saved=False,
-			cert_authorized=False,
+            cert_authorized=False,
             installed_version=self._plugin_version
         )
 
@@ -116,7 +120,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
     def additional_upload_events(self):
         return self._settings.get(['additional_upload_events'])
 
-    ##~~ SimpleApiPlugin mixin
+    # ~~ SimpleApiPlugin mixin
 
     def get_api_commands(self):
         return dict(gen_secret=["json_data"], authorize=["auth_code"], upload_videos=["videos_folder"])
@@ -159,7 +163,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                     self.upload_timelapse(entry.path, data['upload_videos_delete_after'])
             return flask.make_response("Videos uploaded!", 200)
 
-        ##~~ AssetPlugin mixin
+        # ~~ AssetPlugin mixin
 
     def on_event(self, event, payload):
         if event in self.upload_events:
@@ -183,8 +187,8 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
                     self._identifier, {'type': 'upload-failed', 'file_name': "UNKNOWN"}
                 )
                 self._logger.error(
-                    "Unable to find the '%s' key within the %s event payload."
-                    , payload_path_key, event
+                    "Unable to find the '%s' key within the %s event payload.",
+                    payload_path_key, event
                 )
 
     def upload_timelapse(self, path, delete_after_upload):
@@ -212,32 +216,32 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
         if self.tags:
             tags = self.tags.split(",")
 
-        body=dict(
-          snippet=dict(
-            title=file_name,
-            tags=tags,
-          ),
-          status=dict(
-            privacyStatus=self.privacy_status
-          )
+        body = dict(
+            snippet=dict(
+                title=file_name,
+                tags=tags,
+            ),
+            status=dict(
+                privacyStatus=self.privacy_status
+            )
         )
 
         # Call the API's videos.insert method to create and upload the video.
         insert_request = youtube.videos().insert(
-          part=",".join(body.keys()),
-          body=body,
-          # The chunksize parameter specifies the size of each chunk of data, in
-          # bytes, that will be uploaded at a time. Set a higher value for
-          # reliable connections as fewer chunks lead to faster uploads. Set a lower
-          # value for better recovery on less reliable connections.
-          #
-          # Setting "chunksize" equal to -1 in the code below means that the entire
-          # file will be uploaded in a single HTTP request. (If the upload fails,
-          # it will still be retried where it left off.) This is usually a best
-          # practice, but if you're using Python older than 2.6 or if you're
-          # running on App Engine, you should set the chunksize to something like
-          # 1024 * 1024 (1 megabyte).
-          media_body=MediaFileUpload(path, chunksize=-1, resumable=True)
+            part=",".join(body.keys()),
+            body=body,
+            # The chunksize parameter specifies the size of each chunk of data, in
+            # bytes, that will be uploaded at a time. Set a higher value for
+            # reliable connections as fewer chunks lead to faster uploads. Set a lower
+            # value for better recovery on less reliable connections.
+            #
+            # Setting "chunksize" equal to -1 in the code below means that the entire
+            # file will be uploaded in a single HTTP request. (If the upload fails,
+            # it will still be retried where it left off.) This is usually a best
+            # practice, but if you're using Python older than 2.6 or if you're
+            # running on App Engine, you should set the chunksize to something like
+            # 1024 * 1024 (1 megabyte).
+            media_body=MediaFileUpload(path, chunksize=-1, resumable=True)
         )
 
         _status, response = insert_request.next_chunk()

@@ -1,0 +1,14 @@
+install:
+  - pip install pycodestyle octoprint
+
+jobs:
+  include:
+    - language: python
+      python: 3.9
+      script:
+        - pycodestyle . --exclude venv,setup.py --ignore=E501
+    - language: python
+      python: 3.9
+      script:
+        - pip install -r requirements.txt
+        - octoprint dev plugin:install
