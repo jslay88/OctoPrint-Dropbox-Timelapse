@@ -6,7 +6,7 @@ jobs:
     - language: python
       python: 3.9
       script:
-        - pycodestyle . --exclude venv
+        - pycodestyle . --exclude venv,setup.py --ignore=E501
     - language: python
       python: 3.9
       script:
