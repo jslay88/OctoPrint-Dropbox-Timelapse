@@ -1,0 +1,12 @@
+jobs:
+  include:
+    - language: python
+      python: 3.9
+      script:
+        - pip install pycodestyle
+        - pycodestyle . --exclude venv
+    - language: python
+      python: 3.9
+      script:
+        - pip install -r requirements.txt
+        - octoprint dev plugin:install
