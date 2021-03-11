@@ -1,20 +1,22 @@
-install:
-  - pip install pycodestyle octoprint
-
 jobs:
   allow_failures:
     - language: node
       node_js: lts/*
-      script:
+      install:
         - npm install eslint --save-dev
+      script:
         - eslint octoprint_youtube_timelapse
   include:
     - language: python
       python: 3.9
+      install:
+        - pip install pycodestyle
       script:
         - pycodestyle . --exclude venv,setup.py --ignore=E501
     - language: python
       python: 3.9
+      install:
+        - pip install octoprint
       script:
         - pip install -r requirements.txt
         - octoprint dev plugin:install
