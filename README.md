@@ -28,7 +28,7 @@ Due to upstream dependencies this plugin has been updated to only work in Python
 ![screenshot](screenshots/settings_step7.png)
 8.	Select the `External` user type if you do not use Google G Suite, otherwise you can select `Internal` and click `Create`. <br>
 ![screenshot](screenshots/settings_step8.png)
-9.	If you don't publish your app you need to add the user email that you will be using to access Google Drive as a Test User. <br>
+9.	If you don't publish your app you need to add the user email that you will be using to access YouTube Data API as a Test User. <br>
 ![screenshot](screenshots/settings_step8b.png)
 10.	Click `Save and Continue` on the remaining pages for your consent screen, and then click `Back to Dashboard`. <br>
 ![screenshot](screenshots/settings_step9.png)
@@ -40,7 +40,7 @@ Due to upstream dependencies this plugin has been updated to only work in Python
 ![screenshot](screenshots/settings_step12.png)
 14.	Click `OK` to the confirmation page and then use the download button ![screenshot](screenshots/settings_download.png) to save your client_secrets#####.json file. <br>
 ![screenshot](screenshots/settings_step13.png)
-15.	Use the downloaded client_secrets#####.json file to upload into the plugin’s settings to authorize its access to your Google Drive as described in the Configuration section below.
+15.	Use the downloaded client_secrets#####.json file to upload into the plugin’s settings to authorize its access to your YouTube Data API as described in the Configuration section below.
 
 ## Setup
 
@@ -53,7 +53,7 @@ or manually using this URL:
 
 Once the Prerequisite steps above have been completed and you have downloaded your client_secrets.json file follow these steps to authorize the plugin to your newly created app.
 
-1. Open OctoPrint's settings from the System menu at the top of the page and select `Google Drive Backup` in the left-hand navigation menu. <br>
+1. Open OctoPrint's settings from the System menu at the top of the page and select `Youtube Timelapse` in the left-hand navigation menu. <br>
 ![screenshot](screenshots/configuration_step1.png)
 2. Use the `Browse` button to select your downloaded client_secrets#####.json file and press the `Upload` button. <br>
 ![screenshot](screenshots/configuration_step2.png)

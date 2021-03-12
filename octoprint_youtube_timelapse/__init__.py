@@ -90,7 +90,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
     def get_update_information(self):
         return dict(
             youtube_timelapse=dict(
-                displayName="Youtube Timelapse Plugin",
+                displayName="Youtube Timelapse",
                 displayVersion=self._plugin_version,
 
                 # version check: github repository
@@ -271,7 +271,7 @@ class YoutubeTimelapsePlugin(octoprint.plugin.StartupPlugin,
         )
 
 
-__plugin_name__ = "Youtube Timelapse Plugin"
+__plugin_name__ = "Youtube Timelapse"
 __plugin_pythoncompat__ = ">=3,<4"
 
 
