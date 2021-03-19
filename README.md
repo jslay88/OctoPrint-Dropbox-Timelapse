@@ -18,7 +18,7 @@ Due to upstream dependencies this plugin has been updated to only work in Python
 ![screenshot](screenshots/settings_step2.png)
 3.	In the sidebar on the left (via ![screenshot](screenshots/settings_menu.png)), select **APIs and Services** > **Dashboard** then at the top of the page click the button to `Enable APIS and Services`. <br>
 ![screenshot](screenshots/settings_step3.png)
-4.	Enter drive in the search box at the top of the page and click `YouTube Data API v3`. <br>
+4.	Enter youtube in the search box at the top of the page and click `YouTube Data API v3`. <br>
 ![screenshot](screenshots/settings_step4.png)
 5.	Click the `Enable` button to allow our app to use the YouTube Data API v3. <br>
 ![screenshot](screenshots/settings_step5.png)
@@ -59,7 +59,7 @@ Once the Prerequisite steps above have been completed and you have downloaded yo
 ![screenshot](screenshots/configuration_step2.png)
 3. An authentication URL will be generated and presented to you. Click that new URL to open a new window and authorize your custom Google app. <br>
 ![screenshot](screenshots/configuration_step3.png)
-4. Log in to your Google account you want to give Drive access to. You will get a warning that the App isn't verified. This is normal as you have not submitted your custom app for verification by Google. You can choose to do that if you want but is not necessary for the operation of the plugin. Click the `Advanced` link at the bottom of the page and the click `Go to <app name>`. <br>
+4. Log in to your Google account you want to give YouTube access to. You will get a warning that the App isn't verified. This is normal as you have not submitted your custom app for verification by Google. You can choose to do that if you want but is not necessary for the operation of the plugin. Click the `Advanced` link at the bottom of the page and the click `Go to <app name>`. <br>
 ![screenshot](screenshots/configuration_step4.png)
 5. Click the `Allow` button to retrieve your authentication code to enter in the plugin's settings in the next step. <br>
 ![screenshot](screenshots/configuration_step5.png)
