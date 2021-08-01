@@ -3,7 +3,9 @@
 Automatically upload rendered timelapses to Youtube. Can also delete after upload to save space on the Raspberry Pi
 SD Card.
 
-Sponsor this project: [https://paypal.me/ryanfox1985](https://paypal.me/ryanfox1985)
+Sponsor this project:
+- [https://paypal.me/ryanfox1985](https://paypal.me/ryanfox1985)
+- [https://www.patreon.com/ryanfox1985](https://www.patreon.com/ryanfox1985)
 
 ## Prerequisites
 
